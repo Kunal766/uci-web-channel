@@ -2,80 +2,22 @@ import Chat from "@chatui/core";
 import "@chatui/core/dist/index.css";
 import axios from "axios";
 import { FC, useCallback, useContext, useEffect, useMemo } from "react";
-import moment from "moment";
-import { filter, sortBy, toUpper } from "lodash";
+import { filter, find } from "lodash";
 import { AppContext } from "../../../utils/app-context";
 import { toast } from "react-hot-toast";
 import { RenderComp } from "./Comps";
-import { User } from "../../../types";
+import { normalizedChat } from "../../../utils/normalize-chats";
+import { getMsgType } from "../../../utils/get-msg-type";
+import { Conversation_History_Url } from "../../../utils/urls";
 
-export const normalizedChat = (chats: any, currentUser: User) => {
-  return sortBy(
-    filter(
-      chats?.map((chat) => ({
-        ...chat,
-        disabled: true,
-        text: chat?.payload?.text,
-        username: chat?.userId,
-        position: chat?.messageState === "SENT" ? "left" : "right",
-        isIgnore:
-          toUpper(chat?.payload?.text) ===
-          //@ts-ignore
-          toUpper(currentUser?.startingMessage),
-        time: moment(chat.sentTimestamp || chat.repliedTimestamp).valueOf(),
-      })),
-      { isIgnore: false }
-    ),
-    ["time", "messageState"]
-  );
-};
 
-export const getMsgType = (msg: any) => {
-  //type: msg?.payload?.buttonChoices || msg?.choices ? "options" : "text",
-  if (msg?.payload?.buttonChoices || msg?.choices) return "options";
-  if (msg?.imageUrl) return "image";
-  if (msg?.videoUrl) return "video";
-  if (msg?.audioUrl) return "audio";
-  if (msg?.payload?.media) {
-    switch (msg?.payload?.media?.category) {
-      case "IMAGE":
-      case "IMAGE_URL":
-        return "image";
-      case "VIDEO":
-      case "VIDEO_URL":
-        return "video";
-
-      case "AUDIO":
-      case "AUDIO_URL":
-        return "audio";
-      default:
-        return "text";
-    }
-  }
-  return "text";
-};
-
-// interface messageProps {
-//   text: any;
-//   username: string;
-//   self: boolean;
-//   choices: { key: string; text: string; backmenu: boolean }[];
-//   data: any;
-//   location: any;
-//   image: any;
-//   caption: string;
-//   audio: any;
-//   video: any;
-//   doc: any;
-// }
 const ChatUiWindow: FC<{
   currentUser: any;
   setState: any;
-}> = ({   currentUser, setState }) => {
-
+}> = ({ currentUser, setState }) => {
   const context = useContext(AppContext);
- 
-console.log("qwcd:",{context})
+
+
   const chatUIMsg = useMemo(() => {
     return context?.messages?.map((msg) => ({
       type: getMsgType(msg),
@@ -88,30 +30,30 @@ console.log("qwcd:",{context})
     let phone = localStorage.getItem("mobile");
     if (phone === "") alert("Number required");
     if (navigator.onLine) {
-      console.log("qwe1: online");
-      const url = `${
-        process.env.REACT_APP_CHAT_HISTORY_URL
-      }/xmsg/conversation-history?provider=pwa&endDate=${moment().format(
-        "DD-MM-YYYY"
-      )}&startDate=19-03-2023&botId=${
-        JSON.parse(localStorage.getItem("currentUser"))?.id
-      }&userId=${`ucipwa:${phone}`}`;
       axios
-        .get(url)
+        .get(Conversation_History_Url)
         .then((res) => {
           if (res?.data?.result?.records?.length > 0) {
+          
             const normalizedChats = normalizedChat(
               res.data.result.records,
               currentUser
             );
+           
             window &&
               window?.androidInteract?.onEvent(JSON.stringify(normalizedChats));
-            setState((prev: any) => ({ ...prev, messages: normalizedChats }));
+          //  setState((prev: any) => ({ ...prev, messages: normalizedChats }));
             localStorage.setItem("userMsgs", JSON.stringify(normalizedChats));
             context?.setMessages(normalizedChats);
           } else {
+            console.log('qw123: no history')
             // @ts-ignore
-          context?.sendMessage(currentUser?.startingMessage, null, false, currentUser);
+            context?.sendMessage(
+              currentUser?.startingMessage,
+              null,
+              false,
+              currentUser
+            );
           }
         })
         .catch((err) => {
@@ -133,10 +75,10 @@ console.log("qwcd:",{context})
             window?.androidInteract?.onEvent(
               localStorage.getItem("chatHistory")
             );
-          setState((prev: any) => ({
-            ...prev,
-            messages: JSON.parse(localStorage.getItem("chatHistory")),
-          }));
+          // setState((prev: any) => ({
+          //   ...prev,
+          //   messages: JSON.parse(localStorage.getItem("chatHistory")),
+          // }));
           context?.setMessages(offlineMsgs);
         }
       } catch (err) {
@@ -170,11 +112,18 @@ console.log("qwcd:",{context})
   const handleSend = useCallback(
     (type: string, val: any) => {
       if (type === "text" && val.trim()) {
-        //@ts-ignore
-        context?.sendMessage(val, null, true);
+        if (
+          find(context?.botStartingMsgs, { msg: val.trim() }) &&
+          find(context?.botStartingMsgs, { msg: val.trim() })?.id !==
+            currentUser?.botUuid
+        ) {
+          toast.error("action not allowed");
+        } else {
+          context?.sendMessage(val, null, true);
+        }
       }
     },
-    [context]
+    [context, currentUser?.botUuid]
   );
 
   return (

@@ -75,6 +75,7 @@ const StarredChatsPage: FC = () => {
                         maxWidth: '70vw',
                         overflow: 'hidden',
                         whiteSpace: 'nowrap',
+                        marginBottom: '0'
                       }}>
                       {user?.name}
                     </p>

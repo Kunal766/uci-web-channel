@@ -49,6 +49,7 @@ const App: React.FC<appProps> = () => {
   }, [setState, setMessages, currentUser?.id]);
 
   return (
+    
     <RecentChats
       allUsers={allUsers}
     />

@@ -15,6 +15,7 @@ import { Button } from 'react-bootstrap';
 import { toast } from 'react-hot-toast';
 import { useLocalStorage } from '../../../hooks/useLocalStorage';
 import { AppContext } from '../../../utils/app-context';
+import styles from './Comps.module.css';
 
 export const RenderComp: FC<any> = ({
   currentUser,
@@ -203,16 +204,19 @@ export const RenderComp: FC<any> = ({
           {map(choices ?? [], (choice, index) => {
             return (
               <ListItem
-                content={`${choice.key} ${choice.text}`}
-                as="button"
-                onClick={(e) => {
+                className={`${styles.onHover}`}
+                //content={}
+                //@ts-ignore
+                children={ <p  className='onHover'  onClick={(e) => {
                   e.preventDefault();
                   if (isDisabled) {
                     toast.error('Cannot answer again');
                   } else {
                     handleSend('text', choice.key);
                   }
-                }}
+                }}>{`${choice.key} ${choice.text}`}</p>}
+                as="button"
+                
               />
             );
           })}

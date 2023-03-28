@@ -53,7 +53,7 @@
   --tertiarygreen: #002c01;
   --blue: #1d90f5;
   --red: #be0f39;
-  --golden: #d4c17b;
+  --golden: rgba(253,199,0,0.7);
   --primaryyellow: #fec701;
 }
 

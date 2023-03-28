@@ -10,6 +10,7 @@ import { AppContext } from "../../../utils/app-context";
 import { find } from "lodash";
 import { useLocalStorage } from "../../../hooks/useLocalStorage";
 import toast from "react-hot-toast";
+
 interface recentChatsProps {
   allUsers: { name: string; number: string | null; active: boolean }[];
 }
@@ -96,7 +97,8 @@ const RecentChats: React.FC<recentChatsProps> = ({
           </button>
           <Box className={styles.chatList}>
             {context?.loading ? (
-              <div id="loader" className={`${styles.spinner}`}></div>
+               <div id="loader" className={`${styles.spinner}`}></div>
+              
             ) : (
               <>
                 {allUsers.length > 0 ? (

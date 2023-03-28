@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useContext, useState } from 'react';
 import { Box, Flex, Button } from '@chakra-ui/react';
 //@ts-ignore
 import styles from './index.module.css';
@@ -18,6 +18,7 @@ import {
 } from 'mdb-react-ui-kit';
 import 'mdb-react-ui-kit/dist/css/mdb.min.css';
 import '@fortawesome/fontawesome-free/css/all.min.css';
+import { AppContext } from '../../../utils/app-context';
 
 interface chatWindowProps {
   currentUser: { name: string; number: string | null };
@@ -25,13 +26,14 @@ interface chatWindowProps {
 }
 
 const ChatWindow: React.FC<chatWindowProps> = ({ currentUser, setState }) => {
+  const context = useContext(AppContext);
   const history = useHistory();
   const [showNavExternal3, setShowNavExternal3] = useState(false);
 
   const handleClick = (e) => {
     setShowNavExternal3(!showNavExternal3);
     // @ts-ignore
-    toSendMessage(e, null, true, currentUser);
+   context?.sendMessage(e, null, true, currentUser);
   };
 
   return (
@@ -52,6 +54,8 @@ const ChatWindow: React.FC<chatWindowProps> = ({ currentUser, setState }) => {
               fontSize: '14px',
             }}
             onClick={() => {
+              localStorage.removeItem('userMsgs')
+             context?.setMessages([]);
               history.push('/');
             }}
             size="sm"
@@ -79,14 +83,18 @@ const ChatWindow: React.FC<chatWindowProps> = ({ currentUser, setState }) => {
                     style={{
                       display: 'flex',
                       justifyContent: 'space-between',
+                      verticalAlign:'center',
                       width: '100%',
                     }}>
                     <p
                       style={{
                         textOverflow: 'ellipsis',
-                        maxWidth: '70vw',
+                        maxWidth: '45vw',
                         overflow: 'hidden',
                         whiteSpace: 'nowrap',
+                        textAlign: 'left',
+                        marginBottom: 'auto',
+                        marginTop: 'auto'
                       }}>
                       {currentUser?.name}
                     </p>
@@ -112,6 +120,7 @@ const ChatWindow: React.FC<chatWindowProps> = ({ currentUser, setState }) => {
                       style={{
                         position: 'absolute',
                         zIndex: 10,
+                        top: '9vh',
                         right: 0,
                         width: '60vw',
                       }}>

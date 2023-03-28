@@ -67,6 +67,7 @@ const StarredChatItem: React.FC<chatItemProps> = ({
                 maxWidth: "70vw",
                 overflow: "hidden",
                 whiteSpace: "nowrap",
+                marginBottom: '0'
               }}
             >
             {name}
