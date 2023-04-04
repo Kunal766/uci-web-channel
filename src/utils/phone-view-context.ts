@@ -1,5 +1,5 @@
-import {createContext} from 'react';
+import { createContext } from 'react';
 
-type AppContextType =any
+type AppContextType = any;
 
 export const PhoneViewContext = createContext<AppContextType | null>(null);

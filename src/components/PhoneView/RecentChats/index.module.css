@@ -11,7 +11,7 @@
 }
 .top_section {
   width: 100%;
-  height: 10vh;
+  height: 80px;
   font-family: 'Mulish', sans-serif;
   font-weight: 700;
   font-size: 1.4rem;
@@ -92,7 +92,7 @@ font-weight: 700;
   position: fixed;
   bottom: 2vh;
   width: 65vw;
-  height: 10vh;
+  height: 80px;
   border-radius: 17px;
   box-shadow: -6px -4px 4px 0px rgba(0, 0, 0, 0.25) inset,
     0px 4px 4px 0px rgba(0, 0, 0, 0.25),

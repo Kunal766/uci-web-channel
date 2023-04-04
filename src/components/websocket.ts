@@ -1,80 +1,45 @@
-import { io } from "socket.io-client";
-// const host =
-//   process.env.NODE_ENV === "production"
-//     ? window.location.host
-//     : "localhost:3005";
-
-// export const socket = io(`${process.env.REACT_APP_TRANSPORT_SOCKET_URL}`,{query: {deviceID:`phone:${localStorage.getItem("phoneNumber")}`}});
-let onMessageCallback: (arg0: any) => any,
-  onSessionCallback: (arg0: any) => any,
-  onExceptionCallback: (arg0: any) => any;
+import { socket } from '../socket';
 
 export const send = (
-  msg: any,
-  session: any,
-  accessToken: any,
-  toUser: { name: string; number: string | null },
-  socket: any,
-  media: any
-) => {
-  // console.log("qwert:", { msg, session, accessToken, toUser, socket, media });
-  if (toUser?.number === null || toUser?.number === "null") {
-    socket?.emit("botRequest", {
-      content: {
-        text: msg,
-        userId: session.userID,
-        appId: "appId",
-        channel: "NL App",
-        from: session.socketID,
-        context: null,
-        accessToken: accessToken,
-        media: media,
-      },
-      to: "admin",
-    });
-  } else {
-    socket?.emit("botRequest", {
-      content: {
-        text: msg,
-        userId: session.userID,
-        appId: "appId",
-        channel: "NL App",
-        from: session.socketID,
-        context: null,
-        accessToken: accessToken,
-      },
-      to: `ucipwa:${localStorage.getItem("mobile")}`,
-    });
-  }
-};
-
-export const startWebsocketConnection = (socket: any) => {
-  socket.on("connect", () => {
-  });
-
-  socket.on("disconnect", (a) => {
-   });
-
-  socket.on("botResponse", (arg: any) => {
-    onMessageCallback && onMessageCallback(arg);
-  });
-
-  socket.on("exception", (arg: any) => {
-    onExceptionCallback && onExceptionCallback(arg);
-  });
-  socket.on("session", (arg: any) => {
-    onSessionCallback && onSessionCallback(arg);
-  });
-};
-
-export const registerOnMessageCallback = (fn: (msg: any) => void) => {
- onMessageCallback = fn;
-};
-
-export const registerOnExceptionCallback = (fn: (exception: any) => void) => {
- onExceptionCallback = fn;
-};
-
-export const registerOnSessionCallback = (fn: (session: any) => void) => {
-  onSessionCallback = fn;
+	msg: any,
+	session: any,
+	accessToken: any,
+	toUser: { name: string; number: string | null },
+	socketOld: any,
+	media: any
+): void => {
+	if (toUser?.number === null || toUser?.number === 'null') {
+		socket?.emit('botRequest', {
+			content: {
+				text: msg,
+				userId: session.userID,
+				// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+				// @ts-ignore
+				appId: JSON.parse(localStorage.getItem('currentUser'))?.id,
+				channel: 'NL App',
+				from: session.socketID,
+				context: null,
+				accessToken,
+				media
+			},
+			to: 'admin'
+		});
+	} else {
+		console.log('mobile:', { mobile: `nlpwa:${localStorage.getItem('mobile')}` });
+		socket?.emit('botRequest', {
+			content: {
+				text: msg,
+				userId: session.userID,
+				// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+				// @ts-ignore
+				// appId: JSON.parse(localStorage.getItem('currentUser'))?.id,
+				appId: toUser.id,
+				channel: 'NL App',
+				from: session.socketID,
+				context: null,
+				accessToken
+			},
+			to: `nlpwa:${localStorage.getItem('mobile')}`
+		});
+	}
 };
