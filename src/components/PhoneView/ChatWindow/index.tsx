@@ -98,6 +98,7 @@ const ChatWindow: React.FC<chatWindowProps> = ({ currentUser, setState }) => {
                       }}>
                       {currentUser?.name}
                     </p>
+                    <div style={{}}>
                     <MDBNavbar>
                       <MDBContainer fluid>
                         <MDBNavbarToggler
@@ -141,6 +142,7 @@ const ChatWindow: React.FC<chatWindowProps> = ({ currentUser, setState }) => {
                         </MDBBtn>
                       </div>
                     </MDBCollapse>
+                    </div>
                   </Box>
                 </>
               }
