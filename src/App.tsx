@@ -1,22 +1,22 @@
-import React, { FC, useCallback, useEffect, useMemo, useState } from 'react';
-import { HashRouter as Router, Switch, Route } from 'react-router-dom';
-import { User } from './types';
-import Home from './pages/home';
-import Chats from './pages/chats';
-import StarredChats from './pages/starred-chats';
-import StarredChatsPage from './pages/starred-chat-page';
-import axios from 'axios';
-import { AppContext } from './utils/app-context';
-import { CookiesProvider } from 'react-cookie';
-import { send } from './components/websocket';
-import moment from 'moment';
-import { toast, Toaster } from 'react-hot-toast';
-import { normalizeUsers } from './utils/normalize-user';
-import { socket } from './socket';
-import { includes, without, map, sortBy, reverse } from 'lodash';
-import { getBotDetailsUrl } from './utils/urls';
+import React, { FC, useCallback, useEffect, useMemo, useState } from "react";
+import { HashRouter as Router, Switch, Route } from "react-router-dom";
+import { User } from "./types";
+import Home from "./pages/home";
+import Chats from "./pages/chats";
+import StarredChats from "./pages/starred-chats";
+import StarredChatsPage from "./pages/starred-chat-page";
+import axios from "axios";
+import { AppContext } from "./utils/app-context";
+import { CookiesProvider } from "react-cookie";
+import { send } from "./components/websocket";
+import moment from "moment";
+import { toast, Toaster } from "react-hot-toast";
+import { normalizeUsers } from "./utils/normalize-user";
+import { socket } from "./socket";
+import { includes, without, map, sortBy, reverse } from "lodash";
+import { getBotDetailsUrl } from "./utils/urls";
 // import { setLocalStorage } from "./utils/set-local-storage";
-import { initialState } from './utils/initial-states';
+import { initialState } from "./utils/initial-states";
 
 const App: FC = () => {
   // All Users
@@ -24,7 +24,6 @@ const App: FC = () => {
   const [currentUser, setCurrentUser] = useState<User>();
 
   const [loading, setLoading] = useState(true);
-
   const [starredMsgs, setStarredMsgs] = useState({});
   const [messages, setMessages] = useState([]);
 
@@ -41,8 +40,8 @@ const App: FC = () => {
   const [isConnected, setIsConnected] = useState(socket.connected);
 
   const connect = (): void => {
-    window && window?.androidInteract?.log('socket: connect triggered');
-    console.log('socket: socket.connect triggered');
+    window && window?.androidInteract?.log("socket: connect triggered");
+    console.log("socket: socket.connect triggered");
     socket.connect();
   };
 
@@ -62,111 +61,74 @@ const App: FC = () => {
       session: any;
     }>(initialState);
 
+  const updateMsgState = useCallback(({ user, msg, media }) => {
+    const newMsg = {
+      username: user?.name,
+      text: msg.content.title,
+      choices: msg.content.choices,
+      position: "left",
+      id: user?.id,
+      botUuid: user?.id,
+      messageId: msg?.messageId,
+      ...media,
+    };
+    setMessages((prev: any) => [...prev, newMsg]);
+  }, []);
+
   const onMessageReceived = useCallback(
     (msg: any): void => {
-      console.log('socket receiving msg:', { msg });
+      console.log("socket receiving msg:", { msg });
       window &&
         window?.androidInteract?.log(`socket: receiving bot response -${msg}`);
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore
-      const user = JSON.parse(localStorage.getItem('currentUser'));
+      const user = JSON.parse(localStorage.getItem("currentUser"));
       //  console.log("qwe12 message: ", { msg, currentUser, uu: JSON.parse(localStorage.getItem('currentUser')) });
-      if (msg.content.msg_type === 'IMAGE') {
-        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        // @ts-ignore
-        setMessages((prev: any) => [
-          ...prev,
-          {
-            username: user?.name,
-            text: msg.content.title,
-            choices: msg.content.choices,
-            position: 'left',
-            id: user?.id,
-            imageUrl: msg?.content?.media_url,
-            botUuid: user?.id,
-            messageId: msg?.messageId,
-          },
-        ]);
-      } else if (msg.content.msg_type === 'AUDIO') {
-        setMessages((prev) => [
-          ...prev,
-          {
-            username: user?.name,
-            text: msg.content.title,
-            choices: msg.content.choices,
-            position: 'left',
-            id: user?.id,
-            audioUrl: msg?.content?.media_url,
-            botUuid: user?.id,
-            messageId: msg?.messageId,
-          },
-        ]);
-      } else if (msg.content.msg_type === 'VIDEO') {
-        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        // @ts-ignore
-        setMessages((prev) => [
-          ...prev,
-          {
-            username: user?.name,
-            text: msg.content.title,
-            choices: msg.content.choices,
-            position: 'left',
-            id: user?.id,
-            videoUrl: msg?.content?.media_url,
-            botUuid: user?.id,
-            messageId: msg?.messageId,
-          },
-        ]);
+      if (msg.content.msg_type === "IMAGE") {
+        updateMsgState({
+          user,
+          msg,
+          media: { imageUrl: msg?.content?.media_url },
+        });
+      } else if (msg.content.msg_type === "AUDIO") {
+        updateMsgState({
+          user,
+          msg,
+          media: { audioUrl: msg?.content?.media_url },
+        });
+      } else if (msg.content.msg_type === "VIDEO") {
+        updateMsgState({
+          user,
+          msg,
+          media: { videoUrl: msg?.content?.media_url },
+        });
       } else if (
-        msg.content.msg_type === 'DOCUMENT' ||
-        msg.content.msg_type === 'FILE'
+        msg.content.msg_type === "DOCUMENT" ||
+        msg.content.msg_type === "FILE"
       ) {
-        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        // @ts-ignore
-        setMessages((prev) => [
-          ...prev,
-          {
-            username: user?.name,
-            text: msg.content.title,
-            choices: msg.content.choices,
-            position: 'left',
-            id: user?.id,
-            fileUrl: msg?.content?.media_url,
-            botUuid: user?.id,
-            messageId: msg?.messageId,
-          },
-        ]);
-      } else if (msg.content.msg_type === 'TEXT') {
-        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        // @ts-ignore
-        setMessages((prev) => [
-          ...prev,
-          {
-            username: user?.name,
-            text: msg.content.title,
-            choices: msg.content.choices,
-            position: 'left',
-            id: user?.id,
-            botUuid: user?.id,
-            messageId: msg?.messageId,
-          },
-        ]);
+        updateMsgState({
+          user,
+          msg,
+          media: { fileUrl: msg?.content?.media_url },
+        });
+      } else if (msg.content.msg_type === "TEXT") {
+        updateMsgState({ user, msg, media: {} });
       }
 
       localStorage.setItem(
-        'userMsgs',
+        "userMsgs",
         JSON.stringify([
           ...messages,
           {
             username: user?.name,
             text: msg.content.title,
             choices: msg.content.choices,
-            position: 'left',
+            position: "left",
           },
         ])
       );
     },
-    [messages]
+    [messages, updateMsgState]
   );
 
   const onSessionCreated = useCallback((session: { session: any }): void => {
@@ -183,23 +145,23 @@ const App: FC = () => {
 
   useEffect(() => {
     function onConnect(): void {
-      console.log('socket:  onConnect callback');
+      console.log("socket:  onConnect callback");
       window && window?.androidInteract?.log(`socket: onConnectCallback`);
       setIsConnected(true);
     }
 
     function onDisconnect(): void {
-      console.log('socket: disconnecting');
+      console.log("socket: disconnecting");
       window && window?.androidInteract?.log(`socket: onDisconnectCallback`);
       setIsConnected(false);
     }
 
-    socket.on('connect', onConnect);
-    socket.on('disconnect', onDisconnect);
-    socket.on('botResponse', onMessageReceived);
+    socket.on("connect", onConnect);
+    socket.on("disconnect", onDisconnect);
+    socket.on("botResponse", onMessageReceived);
 
-    socket.on('exception', onException);
-    socket.on('session', onSessionCreated);
+    socket.on("exception", onException);
+    socket.on("session", onSessionCreated);
 
     return () => {
       window &&
@@ -207,16 +169,16 @@ const App: FC = () => {
           `socket: turning off everything on return`
         );
       socket.disconnect();
-      socket.off('connect', onConnect);
-      socket.off('disconnect', onDisconnect);
-      socket.off('botResponse', onMessageReceived);
+      socket.off("connect", onConnect);
+      socket.off("disconnect", onDisconnect);
+      socket.off("botResponse", onMessageReceived);
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [onException, onSessionCreated]);
 
   useEffect(() => {
-    if (localStorage.getItem('starredChats')) {
-      setStarredMsgs(JSON.parse(localStorage.getItem('starredChats')));
+    if (localStorage.getItem("starredChats")) {
+      setStarredMsgs(JSON.parse(localStorage.getItem("starredChats")));
     }
   }, []);
 
@@ -228,35 +190,30 @@ const App: FC = () => {
           // window && window?.androidInteract?.log(localStorage.getItem('botList'));
           // eslint-disable-next-line @typescript-eslint/ban-ts-comment
           // @ts-ignore
-          const botIds = JSON.parse(localStorage.getItem('botList'));
-          console.log('asdf:', { botIds });
+          const botIds = JSON.parse(localStorage.getItem("botList"));
+          console.log("asdf:", { botIds });
 
           const config = {
             headers: {
-              'Content-Type': 'application/json',
+              "Content-Type": "application/json",
               ownerID: process.env.REACT_APP_OWNER_ID,
               ownerOrgID: process.env.REACT_APP_OwnerOrgId,
-              'admin-token': process.env.REACT_APP_Admin_Token,
+              "admin-token": process.env.REACT_APP_Admin_Token,
             },
           };
 
           axios
             .get(getBotDetailsUrl(), config)
             .then((response): any => {
-              console.log('qwerty:', { response, botIds });
+              
               const botDetailsList = without(
                 reverse(
                   sortBy(
                     response?.data?.result?.map((bot: any, index: number) => {
-                      // res?.logicIDs[0].transformers?.[0]?.meta.type ===brodcast
-                      console.log('debug:', {
-                        bot,
-                        id: bot?.id,
-                        includes: includes(botIds, bot?.id),
-                      });
+                     
                       if (
                         bot?.logicIDs?.[0]?.transformers?.[0]?.meta?.type !==
-                          'broadcast' &&
+                          "broadcast" &&
                         includes(botIds, bot?.id)
                       ) {
                         if (index === 0)
@@ -275,12 +232,12 @@ const App: FC = () => {
                       }
                       return null;
                     }),
-                    ['createTime']
+                    ["createTime"]
                   )
                 ),
                 null
               );
-              console.log('asdf:', { botDetailsList });
+            
               window &&
                 window?.androidInteract?.log(JSON.stringify(botDetailsList));
 
@@ -291,24 +248,20 @@ const App: FC = () => {
               window?.androidInteract?.onBotDetailsLoaded(
                 JSON.stringify(botDetailsList)
               );
-              if (localStorage.getItem('currentUser')) {
+              if (localStorage.getItem("currentUser")) {
                 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
                 // @ts-ignore
-                setCurrentUser(JSON.parse(localStorage.getItem('currentUser')));
+                setCurrentUser(JSON.parse(localStorage.getItem("currentUser")));
                 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
                 // @ts-ignore
               } else setCurrentUser(botDetailsList?.[0]);
             })
-            .catch((err) => console.log('qwerty:', { err }));
+            .catch((err) => console.log("qwerty:", { err }));
         } else {
           setLoading(false);
-          if (localStorage.getItem('botDetails')) {
-            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-            // @ts-ignore
-            setUsers(JSON.parse(localStorage.getItem('botDetails')));
-            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-            // @ts-ignore
-            setCurrentUser(JSON.parse(localStorage.getItem('botDetails'))?.[0]);
+          if (localStorage.getItem("botDetails")) {
+             setUsers(JSON.parse(localStorage.getItem("botDetails"))); 
+            setCurrentUser(JSON.parse(localStorage.getItem("botDetails"))?.[0]);
           }
         }
       };
@@ -323,9 +276,8 @@ const App: FC = () => {
   }, []);
 
   const onChangeCurrentUser = useCallback((newUser: User) => {
-    console.log('qwe12:', { newUser });
     setCurrentUser({ ...newUser, active: true });
-    localStorage.removeItem('userMsgs');
+    localStorage.removeItem("userMsgs");
     setMessages([]);
   }, []);
 
@@ -334,40 +286,40 @@ const App: FC = () => {
       send(text, state.session, null, currentUser, socket, null);
       if (isVisibile)
         if (media) {
-          if (media.mimeType.slice(0, 5) === 'image') {
+          if (media.mimeType.slice(0, 5) === "image") {
             setState((prev) => ({
               ...prev,
               messages: prev.messages.concat({
                 username: prev.username,
                 image: media.url,
-                position: 'right',
+                position: "right",
               }),
             }));
-          } else if (media.mimeType.slice(0, 5) === 'audio' && isVisibile) {
+          } else if (media.mimeType.slice(0, 5) === "audio" && isVisibile) {
             setState((prev) => ({
               ...prev,
               messages: prev.messages.concat({
                 username: prev.username,
                 audio: media.url,
-                position: 'right',
+                position: "right",
               }),
             }));
-          } else if (media.mimeType.slice(0, 5) === 'video') {
+          } else if (media.mimeType.slice(0, 5) === "video") {
             setState((prev) => ({
               ...prev,
               messages: prev.messages.concat({
                 username: prev.username,
                 video: media.url,
-                position: 'right',
+                position: "right",
               }),
             }));
-          } else if (media.mimeType.slice(0, 11) === 'application') {
+          } else if (media.mimeType.slice(0, 11) === "application") {
             setState((prev) => ({
               ...prev,
               messages: prev.messages.concat({
                 username: prev.username,
                 doc: media.url,
-                position: 'right',
+                position: "right",
               }),
             }));
           } else {
@@ -377,19 +329,19 @@ const App: FC = () => {
                 username: prev.username,
                 text: text,
                 doc: media.url,
-                position: 'right',
+                position: "right",
               }),
             }));
           }
         } else {
           localStorage.setItem(
-            'userMsgs',
+            "userMsgs",
             JSON.stringify([
               ...messages,
               {
                 username: state.username,
                 text: text,
-                position: 'right',
+                position: "right",
                 botUuid: currentUser?.id,
                 disabled: true,
               },
@@ -402,7 +354,7 @@ const App: FC = () => {
             {
               username: state.username,
               text: text,
-              position: 'right',
+              position: "right",
               botUuid: currentUser?.id,
               payload: { text },
               time: moment().valueOf(),

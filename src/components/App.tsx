@@ -15,20 +15,9 @@ const App: React.FC<appProps> = () => {
 
 	useEffect(() => {
 		try {
-			// const retrievedMessages: {
-			// 	user: string;
-			// 	phoneNumber: string | null;
-			// 	messages: any[];
-			// }[] = JSON.parse(localStorage.getItem('allMessages') || '') || [];
-			// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 			// @ts-ignore
 			const userMsgsFromLocal = JSON.parse(localStorage.getItem('userMsgs'));
-			// if (retrievedMessages.length !== 0) {
-			// 	setState((prev: any) => ({
-			// 		...prev,
-			// 		allMessages: retrievedMessages
-			// 	}));
-			// }
+		
 			if (userMsgsFromLocal?.length > 0) {
 				const userMsgs = filter(userMsgsFromLocal, {
 					botUuid: currentUser?.id

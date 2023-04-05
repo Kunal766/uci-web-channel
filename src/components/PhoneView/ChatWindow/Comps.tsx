@@ -31,7 +31,7 @@ export const RenderComp: FC<any> = ({ currentUser, msg, chatUIMsg, onSend }) => 
 		botUuid?: string;
 		messageId?: string;
 	}>({});
-	const [starredFromLocal, setStarredFromLocal] = useLocalStorage('starredChats', null, true);
+	const [starredFromLocal] = useLocalStorage('starredChats', null, true);
 
 	useEffect(() => {
 		if (starredFromLocal) {
@@ -144,21 +144,7 @@ export const RenderComp: FC<any> = ({ currentUser, msg, chatUIMsg, onSend }) => 
 					}
 					return valueToReturn;
 				});
-				// try {
-				//   window &&
-				//     window?.androidInteract?.onMsgSaveUpdate(
-				//       content,
-				//       msg?.messageId,
-				//       currentUser?.id,
-				//       true
-				//     );
-				//   window && window?.androidInteract?.log(JSON.stringify(content));
-				// } catch (err) {
-				//   window &&
-				//     window?.androidInteract?.log(
-				//       `error in onMsgSaveUpdate func:${JSON.stringify(err)}`
-				//     );
-				// }
+				
 			}
 		},
 		[context, msgToStarred]
