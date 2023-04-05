@@ -210,6 +210,13 @@ export const RenderComp: FC<any> = ({ currentUser, msg, chatUIMsg, onSend }) => 
 		}
 	};
 
+
+	const onVideoDownload=(url:string):void=>{
+		window && window?.androidInteract?.onVideoDownload(url);
+	};
+	const onPdfDownload=(url:string):void=>{
+		window && window?.androidInteract?.onPdfDownload(url);
+	};
 	const { content, type } = msg;
 	console.log('qwsd:', { content, type });
 	switch (type) {
@@ -337,7 +344,7 @@ export const RenderComp: FC<any> = ({ currentUser, msg, chatUIMsg, onSend }) => 
 									)}
 									<FontAwesomeIcon
 										icon={faDownload}
-										onClick={(): void => download(url)}
+										onClick={(): void => onPdfDownload(url)}
 										style={{ marginLeft: '10px' }}
 										color={'var(--grey)'}
 									/>
@@ -386,6 +393,12 @@ export const RenderComp: FC<any> = ({ currentUser, msg, chatUIMsg, onSend }) => 
 											color={isStarred ? 'var(--primaryyellow)' : 'var(--grey)'}
 										/>
 									)}
+									<FontAwesomeIcon
+										icon={faDownload}
+										onClick={(): void => onVideoDownload(url)}
+										style={{ marginLeft: '10px' }}
+										color={'var(--grey)'}
+									/>
 								</span>
 							</div>
 						</div>

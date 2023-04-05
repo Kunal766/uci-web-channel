@@ -39,27 +39,26 @@ const App: FC = () => {
 
   const [isConnected, setIsConnected] = useState(socket.connected);
 
-  const connect = (): void => {
+  const connect = useCallback(() => {
     window && window?.androidInteract?.log("socket: connect triggered");
     console.log("socket: socket.connect triggered");
     socket.connect();
-  };
+  }, []);
 
   useEffect(() => {
     if (!isConnected) connect();
   }, [isConnected]);
 
-  const [state, setState] =
-    useState<{
-      allMessages: {
-        user: string;
-        phoneNumber: string | null;
-        messages: any[];
-      }[];
+  const [state, setState] = useState<{
+    allMessages: {
+      user: string;
+      phoneNumber: string | null;
       messages: any[];
-      username: string;
-      session: any;
-    }>(initialState);
+    }[];
+    messages: any[];
+    username: string;
+    session: any;
+  }>(initialState);
 
   const updateMsgState = useCallback(({ user, msg, media }) => {
     const newMsg = {
@@ -205,12 +204,10 @@ const App: FC = () => {
           axios
             .get(getBotDetailsUrl(), config)
             .then((response): any => {
-              
               const botDetailsList = without(
                 reverse(
                   sortBy(
                     response?.data?.result?.map((bot: any, index: number) => {
-                     
                       if (
                         bot?.logicIDs?.[0]?.transformers?.[0]?.meta?.type !==
                           "broadcast" &&
@@ -237,7 +234,7 @@ const App: FC = () => {
                 ),
                 null
               );
-            
+
               window &&
                 window?.androidInteract?.log(JSON.stringify(botDetailsList));
 
@@ -260,7 +257,7 @@ const App: FC = () => {
         } else {
           setLoading(false);
           if (localStorage.getItem("botDetails")) {
-             setUsers(JSON.parse(localStorage.getItem("botDetails"))); 
+            setUsers(JSON.parse(localStorage.getItem("botDetails")));
             setCurrentUser(JSON.parse(localStorage.getItem("botDetails"))?.[0]);
           }
         }
