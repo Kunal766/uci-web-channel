@@ -47,7 +47,7 @@ const App: FC = () => {
 
   useEffect(() => {
     if (!isConnected) connect();
-  }, [isConnected]);
+  }, [isConnected, connect]);
 
   const [state, setState] = useState<{
     allMessages: {
