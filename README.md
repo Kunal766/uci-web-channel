@@ -1,70 +1,74 @@
-# Getting Started with Create React App
+# Unified Communication Interface 
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+## About UCI :open_book:
 
-## Available Scripts
+The Unified Communications Interface (UCI) aims to democratize the use of different communication channels such as WhatsApp, Telegram, SMS, email and more for governance use cases through a standard configurable manner that is reusable and scalable across all governance use cases.
 
-In the project directory, you can run:
+## Features :dart:
 
-### `npm start`
+- Ability to connect to any communication channel through any service provider without doing custom changes in the core logic UCI.
+- The UCI ecosystem is independent of external variables like communication channel and service provider powered by XMessage standard.
+- Ability to have a configurable conversation logic for the bot
+- Ability to connect to any database (local or federated) via services
+- Ability to include value added services in the bot interaction flow through Microservices (Internal or External)
+- Ability to create tools on top of UCI APIs to manage Bot configuration, conversations and visualization
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+## Requirements :scroll:
 
-### `npm test`
+[NodeJS](https://nodejs.org/en/download/) and NPM or [yarn](https://yarnpkg.com/getting-started/install)
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+## Installation :walking:
 
-### `npm run build`
+### 1. Fork it :fork_and_knife:
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+You can get your own fork/copy of [UCI](https://github.com/Samagra-Development/uci-web-channel) by using the <kbd><b>Fork</b></kbd> button.
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+### 2. Clone it :busts_in_silhouette:
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+You need to clone (download) it to a local machine using
 
-### `npm run eject`
+```sh
+git clone https://github.com/Your_Username/uci-web-channel.git
+```
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+> This makes a local copy of the repository in your machine.
+Once you have cloned the `uci-web-channel` repository in GitHub, move to that folder first using the change directory command.
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+```sh
+# This will change directory to a folder uci-web-channel
+cd uci-web-channel
+```
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+Move to this folder for all other commands.
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+### 3. Set it up :arrow_up:
 
-## Learn More
+Run the following commands to see that _your local copy_ has a reference to _your forked remote repository_ in GitHub :octocat:
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+```sh
+git remote -v
+origin  https://github.com/Your_Username/uci-web-channel.git (fetch)
+origin  https://github.com/Your_Username/uci-web-channel.git (push)
+```
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+### 4. Create a new .env file and copy contents from .env.sample :open_file_folder:
 
-### Code Splitting
+```sh
+cp .env.sample .env
+```
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+The websocket connection URL for the plaground can be used for testing - `wss://comms-playground.samagra.io` for the `REACT_APP_TRANSPORT_SOCKET_URL`.
 
-### Analyzing the Bundle Size
+### 5. Run it :checkered_flag:
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+Run `npm run dev`
 
-### Making a Progressive Web App
+## Designs
+Below are the designs of how output screens will look like. For more detailed view you can checkout the [Figma](https://www.figma.com/file/d8JiwkYJqGYXQaflCyNVzl/UCI-web-channel?node-id=0%3A1) file.
+![Designs](https://user-images.githubusercontent.com/77741561/171156677-0ee016dd-a240-4edc-b2e8-50b08ac06a58.png)
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
+## Contributing
 
-### Advanced Configuration
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+We really like contributions in several forms, see [CONTRIBUTING.md](CONTRIBUTING.md)
