@@ -1,5 +1,5 @@
 import React, { FC, useCallback, useEffect, useMemo, useState } from "react";
-import { HashRouter as Router, Switch, Route } from "react-router-dom";
+import { Switch, Route, useHistory } from "react-router-dom";
 import { User } from "./types";
 import Home from "./pages/home";
 import Chats from "./pages/chats";
@@ -17,6 +17,7 @@ import { includes, without, map, sortBy, reverse } from "lodash";
 import { getBotDetailsUrl } from "./utils/urls";
 // import { setLocalStorage } from "./utils/set-local-storage";
 import { initialState } from "./utils/initial-states";
+import { UserInput } from "./components/UserInput";
 
 const App: FC = () => {
   // All Users
@@ -26,7 +27,7 @@ const App: FC = () => {
   const [loading, setLoading] = useState(true);
   const [starredMsgs, setStarredMsgs] = useState({});
   const [messages, setMessages] = useState([]);
-
+  const history =useHistory();
   const botStartingMsgs = useMemo(
     () =>
       map(users, (user) => ({ id: user?.botUuid, msg: user?.startingMessage })),
@@ -45,6 +46,10 @@ const App: FC = () => {
     socket.connect();
   }, []);
 
+  useEffect(()=>{
+    if((!localStorage.getItem('mobile') || !(localStorage.getItem('auth')) || !localStorage.getItem('botList')))
+      history.push('/auth')
+  },[history])
   useEffect(() => {
     if (!isConnected) connect();
   }, [isConnected, connect]);
@@ -182,6 +187,13 @@ const App: FC = () => {
   }, []);
 
   // getting botList from android and fetching bot details
+  const filterList =useMemo(()=>{
+    if(localStorage.getItem('filterList')){
+      return localStorage.getItem('filterList')=== 'True'
+    }
+    return true
+  },[]);
+ 
   useEffect(() => {
     try {
       const checkOnline = async (): Promise<void> => {
@@ -209,9 +221,9 @@ const App: FC = () => {
                   sortBy(
                     response?.data?.result?.map((bot: any, index: number) => {
                       if (
-                        bot?.logicIDs?.[0]?.transformers?.[0]?.meta?.type !==
+                        filterList ? bot?.logicIDs?.[0]?.transformers?.[0]?.meta?.type !==
                           "broadcast" &&
-                        includes(botIds, bot?.id)
+                        includes(botIds, bot?.id) : true
                       ) {
                         if (index === 0)
                           return normalizeUsers({
@@ -394,15 +406,21 @@ const App: FC = () => {
     ]
   );
 
+
   return (
-    <Router>
+    <>
       <CookiesProvider>
         <AppContext.Provider value={values}>
           <>
+         
             <Switch>
-              <Route path="/" exact>
-                <Home />
+            <Route path="/" exact>
+              <Home />
               </Route>
+              <Route path="/auth" exact>
+                <UserInput />
+              </Route>
+              
               <Route path="/chats/:id">
                 <Chats />
               </Route>
@@ -414,10 +432,11 @@ const App: FC = () => {
               </Route>
             </Switch>
             <Toaster position="top-right" reverseOrder={false} />
+           
           </>
         </AppContext.Provider>
       </CookiesProvider>
-    </Router>
+    </>
   );
 };
 

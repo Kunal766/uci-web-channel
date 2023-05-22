@@ -5,6 +5,7 @@ export type User = {
 	id?: string;
 	botUuid?: string;
 	startingMessage?: string;
+	botImage?:string;
 };
 
 export type toChangeCurrentUser = (arg: User) => void;
