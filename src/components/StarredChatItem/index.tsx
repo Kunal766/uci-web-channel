@@ -1,4 +1,4 @@
-import React, { useCallback } from 'react';
+import React, { useCallback, useMemo } from 'react';
 import { Box, useColorModeValue } from '@chakra-ui/react';
 import { useHistory } from 'react-router-dom';
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
@@ -30,6 +30,7 @@ const StarredChatItem: React.FC<chatItemProps> = ({ active, name, phoneNumber, u
 		history.push(`/starredChats/${user?.id}`);
 	}, [history, user]);
 
+	const botIcon=useMemo(()=>user?.botImage || profilePic,[user?.botImage]);
 	return (
 		<React.Fragment>
 			<button
@@ -40,7 +41,7 @@ const StarredChatItem: React.FC<chatItemProps> = ({ active, name, phoneNumber, u
 				<div className={styles.avatar}>
 					{
 						<img
-							src={!isBlank ? profilePic : crossPic}
+							src={!isBlank ? botIcon : crossPic}
 							height={'100%'}
 							width={'100%'}
 							alt="profile pic"

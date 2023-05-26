@@ -1,4 +1,4 @@
-import React, { useContext, useState } from 'react';
+import React, { useContext, useMemo, useState } from 'react';
 import { Box, Flex, Button } from '@chakra-ui/react';
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
@@ -25,9 +25,10 @@ import styles from './index.module.css';
 import 'mdb-react-ui-kit/dist/css/mdb.min.css';
 import '@fortawesome/fontawesome-free/css/all.min.css';
 import { AppContext } from '../../../utils/app-context';
+import { User } from '../../../types';
 
 interface chatWindowProps {
-	currentUser: { name: string; number: string | null };
+	currentUser: User;
 }
 
 const ChatWindow: React.FC<chatWindowProps> = ({ currentUser }) => {
@@ -42,7 +43,8 @@ const ChatWindow: React.FC<chatWindowProps> = ({ currentUser }) => {
 		// @ts-ignore
 		context?.sendMessage(msg, null, true, currentUser);
 	};
-
+    
+	 const botIcon=useMemo(()=>currentUser?.botImage || profilePic,[currentUser?.botImage])
 	return (
 		<Flex bgColor="var(--primarydarkblue)" flexDirection="column" height="100vh" width="100%">
 			{/* Top Section */}
@@ -74,7 +76,8 @@ const ChatWindow: React.FC<chatWindowProps> = ({ currentUser }) => {
 							{
 								<>
 									<div className={styles.innerRing}>
-										<img src={profilePic} height={'100%'} width={'100%'} alt="profile pic" />
+										
+										<img src={botIcon} height={'100%'} width={'100%'} alt="profile pic" />
 									</div>
 									<Box
 										style={{

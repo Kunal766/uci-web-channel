@@ -24,6 +24,7 @@ import styles from './Comps.module.css';
 import botImage from '../../../assets/images/bot_icon_2.png';
 
 export const RenderComp: FC<any> = ({ currentUser, msg, chatUIMsg, onSend }) => {
+	console.log("venom2:",{currentUser})
 	const context = useContext(AppContext);
 
 	const [isInLocal, setIsInLocal] = useState(false);
@@ -32,7 +33,8 @@ export const RenderComp: FC<any> = ({ currentUser, msg, chatUIMsg, onSend }) => 
 		messageId?: string;
 	}>({});
 	const [starredFromLocal] = useLocalStorage('starredChats', null, true);
-
+    
+	const botIcon=useMemo(()=>currentUser?.botImage || botImage ,[currentUser?.botImage]);
 	useEffect(() => {
 		if (starredFromLocal) {
 			if (Object.keys(starredFromLocal)?.includes(msg?.content?.data?.botUuid)) {
@@ -218,14 +220,14 @@ export const RenderComp: FC<any> = ({ currentUser, msg, chatUIMsg, onSend }) => 
 		window && window?.androidInteract?.onPdfDownload(url);
 	};
 	const { content, type } = msg;
-	console.log('qwsd:', { content, type });
+	console.log('venom:', { content, type ,msg});
 	switch (type) {
 		case 'text':
 			return (
 				<>
 					{content?.data?.position === 'left' && (
 						<div style={{ width: '40px', marginRight: '4px', textAlign: 'center' }}>
-							<Avatar src={botImage} size="md" />
+							<Avatar src={botIcon} size="md" />
 						</div>
 					)}
 					<Bubble type="text">
@@ -266,7 +268,7 @@ export const RenderComp: FC<any> = ({ currentUser, msg, chatUIMsg, onSend }) => 
 				<>
 					{content?.data?.position === 'left' && (
 						<div style={{ width: '40px', marginRight: '4px', textAlign: 'center' }}>
-							<Avatar src={botImage} size="md" />
+							<Avatar src={botIcon} size="md" />
 						</div>
 					)}
 					<Bubble type="image">
@@ -314,7 +316,7 @@ export const RenderComp: FC<any> = ({ currentUser, msg, chatUIMsg, onSend }) => 
 				<>
 					{content?.data?.position === 'left' && (
 						<div style={{ width: '40px', marginRight: '4px', textAlign: 'center' }}>
-							<Avatar src={botImage} size="md" />
+							<Avatar src={botIcon} size="md" />
 						</div>
 					)}
 					<Bubble type="image">
@@ -357,12 +359,13 @@ export const RenderComp: FC<any> = ({ currentUser, msg, chatUIMsg, onSend }) => 
 		}
 
 		case 'video': {
+			
 			const url = content?.data?.payload?.media?.url || content?.data?.videoUrl;
 			return (
 				<>
 					{content?.data?.position === 'left' && (
 						<div style={{ width: '40px', marginRight: '4px', textAlign: 'center' }}>
-							<Avatar src={botImage} size="md" />
+							<Avatar src={botIcon} size="md" />
 						</div>
 					)}
 					<Bubble type="image">
@@ -371,7 +374,7 @@ export const RenderComp: FC<any> = ({ currentUser, msg, chatUIMsg, onSend }) => 
 								cover="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAPcAAADMCAMAAACY78UPAAAAeFBMVEUyMjL///8vLy/Q0NBJSUlAQEA8Oz85OD0tLS0qKio1Nzs5OTz6+vo5OTnZ2dkzMzPw8PBkZGRGRkaAgIDo6OioqKgkJCR6enqurq5SUlLMzMyFhYXh4eHW1ta7u7tHR0dcXFybm5twcHC/v7+UlJRXWFeVlZVsbGwZSzceAAAD0UlEQVR4nO3ca3OiMBiGYYOoPUQNihVBrQfc/v9/uEntslRBwmFk3jfPNbOf2tlyT0oCgTp4m0wm75Mb46tRkfH40Vf/f7nczQ97L/aW0d8xLfxJ1+N+n4wnFcejvzH//+l/AwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAgOfw+j6AfswXcxfLvcUqnb70fRTP5/lDebx8ODfkuluI3Xrg2pB/dwu137y4NeTXbjPkI6eG/F+3CKPPj74P5omybiGGiefO73quW6jo8Nr38TxLvlvI3dJz5Cz/1a2H/Oi7sZbfdAsxWzpx+XbXrSd2F9by+24h4yX/ib2g20zs01fm5YXdQsQJ87O8pFuo1YH15VtZt17LT6+Mh7y02ww544n9Qbdey08jruEPu8U2+mK6pD3uFnK2HLC8V6no1uX7A8et5spuIXapz2/ILbr15duG3Vlu0y3kMJkzG3KrbnOWB7zOcstuPbEnrNZy225zXx4w2oqx79aXb4z22Ot0C7UPuDw8rdWtJ/Z0xGNir9fN5yatbrc+y9Mpg/D63fryjcFZ3qBbyF1CfmJv0m3WcuqPVZp165u0ZEF6yJt267Wc9H15425zkzalu5Y37zZr+YXsWt6mW4htQnUtb9ctwlVAcyumZbdey9dzihN7225z+XYhOOTtu82LUAtyE3sX3WbDldpa3km3eUWC2GOVbrq/330jdZZ31W2epC3mfdfY66xbX8Ss3ezebwj9onfWHdPaZO6oOzwHtN786qY7PC36Dqmpi24VnWgN9qCLbrlNPFrXLEbrbhldKN6Dt+0eHmm+BNKuW54X5M7sq1bdwyXNwR606g7PJ7Lbii26VTLt++BbaNqtjgHdwR407ZbbP4SfGRjNuvcHimt2XpPuYeqT/h036nereEP8GbBRu3u2pLS9UKpmtzqfSG0flqrXHSb032y5qtMtjwH1aTxj3y1nK+Jrdp5995n8mp1n222e/THKtuxWMad3sA2r7nDp932cXbPoVvs1+cvSO9V/PxamBLdLK1V1y4jPmp1X0b1b+aym8czj7pjfH8z9eNS9S8hul1Yq71aUt0srlXarZETo9YXaSrpVxOQ+u0xhtwyPjG69ChV273mu2XkF3bPjhueanXfXLYfU/2TGym33LNlQei2psd/dKl478oF7v7pVSvkRZy25brn6Yj+NZ7JuuY24r9l5Wfc5YPX5DVV+umepA2t23ne3ir9cWLPzTHeYbPo+jKfz/HPszIfk5nifJ24fQWRn6s6aDQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAbPwFoto0lZUp3cEAAAAASUVORK5CYII="
 								src={url}
 							/>
-
+                        {content?.data?.caption && <div><strong>{content?.data?.caption} </strong></div>}  
 							<div
 								style={{
 									display: 'flex',
@@ -411,11 +414,11 @@ export const RenderComp: FC<any> = ({ currentUser, msg, chatUIMsg, onSend }) => 
 			return (
 				<>
 					<div style={{ width: '95px', marginRight: '4px', textAlign: 'center' }}>
-						<Avatar src={botImage} size="md" />
+						<Avatar src={botIcon} size="md" />
 					</div>
 					<Bubble type="text">
 						<div style={{ display: 'flex' }}>
-							<span style={{ fontSize: '16px' }}>{content.text}</span>
+							<span style={{ fontSize: '16px' }} dangerouslySetInnerHTML={{__html: `${content.text}`}} ></span>
 						</div>
 						<div style={{ marginTop: '10px' }} />
 						{getLists({

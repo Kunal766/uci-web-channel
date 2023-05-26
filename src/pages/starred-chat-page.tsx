@@ -19,7 +19,7 @@ const StarredChatsPage: FC = () => {
 	const { id } = useParams<{ id: string }>();
 	const history = useHistory();
 	const user = useMemo(() => find(context?.allUsers, { id }), [context?.allUsers, id]);
-
+	const botIcon=useMemo(()=>context?.currentUser?.botImage || profilePic,[context?.currentUser?.botImage])
 	useEffect(() => {
 		window && window?.androidInteract?.onBotListingScreenFocused(false);
 		window &&
@@ -55,7 +55,7 @@ const StarredChatsPage: FC = () => {
 							{
 								<>
 									<div className={styles.innerRing}>
-										<img src={profilePic} height={'100%'} width={'100%'} alt="profile pic" />
+										<img src={botIcon} height={'100%'} width={'100%'} alt="profile pic" />
 									</div>
 									<Box>
 										<p

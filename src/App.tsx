@@ -66,10 +66,12 @@ const App: FC = () => {
   }>(initialState);
 
   const updateMsgState = useCallback(({ user, msg, media }) => {
+    console.log("venom:",{user,msg,media})
     const newMsg = {
       username: user?.name,
       text: msg.content.title,
       choices: msg.content.choices,
+      caption: msg.content.caption,
       position: "left",
       id: user?.id,
       botUuid: user?.id,
@@ -282,7 +284,7 @@ const App: FC = () => {
           `error in fetching botList:${JSON.stringify(err)}`
         );
     }
-  }, []);
+  }, [filterList]);
 
   const onChangeCurrentUser = useCallback((newUser: User) => {
     setCurrentUser({ ...newUser, active: true });
