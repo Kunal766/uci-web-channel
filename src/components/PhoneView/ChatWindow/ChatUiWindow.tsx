@@ -20,24 +20,24 @@ import { getConvHistoryUrl } from '../../../utils/urls';
 import { getMsgType } from '../../../utils/get-msg-type';
 import { normalizedChat } from '../../../utils/normalize-chats';
 import FullScreenLoader from '../../FullScreenLoader';
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-ignore
+import botImage from '../../../assets/images/bot_icon_2.png';
 
 const ChatUiWindow: FC<{
 	currentUser: any;
 }> = ({ currentUser }) => {
 	const [loading, setLoading] = useState(true);
 	const context = useContext(AppContext);
-
-	// useEffect(() => {
-	// 	setTimeout(() => setLoading(false), 400);
-	// }, []);
 	const chatUIMsg = useMemo(
 		() =>
 			context?.messages?.map((msg: any) => ({
 				type: getMsgType(msg),
 				content: { text: msg?.text, data: { ...msg } },
-				position: msg?.position ?? 'right'
+				position: msg?.position ?? 'right',
+				user: { avatar: msg?.position === 'left' ? currentUser?.botImage || botImage :""},
 			})),
-		[context?.messages]
+		[context?.messages, currentUser?.botImage]
 	);
 
 	const sendMessage = useCallback(() => {
@@ -54,7 +54,7 @@ const ChatUiWindow: FC<{
 		() => (context?.currentUser ? getConvHistoryUrl(context?.currentUser) : null),
 		[context?.currentUser]
 	);
-	// console.log('qwers12:', { conversationHistoryUrl, user: context?.currentUser });
+	
 	useEffect(() => {
 		const phone = localStorage.getItem('mobile');
 		if (phone === '') toast.error('Mobile Number required');
@@ -64,25 +64,18 @@ const ChatUiWindow: FC<{
 					.get(conversationHistoryUrl)
 					.then((res) => {
 						setLoading(false);
-						// console.log('qwer123:', { res });
+						
 						if (res?.data?.result?.records?.length > 0) {
 							const normalizedChats = normalizedChat(res.data.result.records);
-							// console.log('qw12:', { normalizedChats });
 							window && window?.androidInteract?.log(JSON.stringify(normalizedChats));
-							//  setState((prev: any) => ({ ...prev, messages: normalizedChats }));
 							localStorage.setItem('userMsgs', JSON.stringify(normalizedChats));
-							// context?.setMessages(normalizedChats);
 							setMessages(normalizedChats);
 						} else {
 							sendMessage();
-							// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-							// @ts-ignore
-							// context?.sendMessage(currentUser?.startingMessage, null, false, currentUser);
 						}
 					})
 					.catch((err) => {
 						setLoading(false);
-						console.error('cvbn:', err);
 						toast.error(JSON.stringify(err?.message));
 						window &&
 							window?.androidInteract?.log(
@@ -102,11 +95,6 @@ const ChatUiWindow: FC<{
 						{ botUuid: JSON.parse(localStorage.getItem('currentUser'))?.id }
 					);
 					window && window?.androidInteract?.log(localStorage.getItem('chatHistory'));
-					// setState((prev: any) => ({
-					//   ...prev,
-					//   messages: JSON.parse(localStorage.getItem("chatHistory")),
-					// }));
-					// context?.setMessages(offlineMsgs);
 					setMessages(offlineMsgs);
 				}
 			} catch (err) {

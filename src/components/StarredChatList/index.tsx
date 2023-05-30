@@ -1,5 +1,5 @@
 import React, { FC, ReactElement, useCallback, useContext, useMemo } from 'react';
-import { Avatar, Bubble, FileCard, Image, List, ListItem, Video } from '@chatui/core';
+import { Bubble, FileCard, Image, List, ListItem, Video } from '@chatui/core';
 import { Chat } from '@chatui/core/lib/components/Chat';
 import { map } from 'lodash';
 import moment from 'moment';
@@ -23,9 +23,10 @@ const StarredChatList: FC<{ user: User }> = ({ user }) => {
 			context?.starredMsgs?.[user?.id]?.map((msg: any) => ({
 				type: getMsgType(msg),
 				content: { text: msg?.text, data: { ...msg } },
-				position: msg?.position ?? 'right'
+				position: msg?.position ?? 'right',
+				user: { avatar: msg?.position === 'left' ? context?.currentUser?.botImage || botImage :""},
 			})),
-		[context?.starredMsgs, user?.id]
+		[context?.currentUser?.botImage, context?.starredMsgs, user?.id]
 	);
 
 	const getLists = useCallback(
@@ -46,8 +47,6 @@ const StarredChatList: FC<{ user: User }> = ({ user }) => {
 		),
 		[]
 	);
-	console.log("venom33:",{context})
-	const botIcon=useMemo(()=>context?.currentUser?.botImage || botImage,[context?.currentUser?.botImage])
 	
 	function renderMessageContent(msg: { type: string; content: any }): ReactElement {
 		const { type, content } = msg;
@@ -55,11 +54,6 @@ const StarredChatList: FC<{ user: User }> = ({ user }) => {
 			case 'text':
 				return (
 					<>
-						{content?.data?.position === 'left' && (
-							<div style={{ width: '40px', marginRight: '4px', textAlign: 'center' }}>
-								<Avatar src={botIcon} size="md" />
-							</div>
-						)}
 						<Bubble type="text">
 							<p style={{ fontSize: '16px' }}>{content.text}</p>
 							<span style={{ color: 'var(--grey)', fontSize: '10px' }}>
@@ -93,9 +87,6 @@ const StarredChatList: FC<{ user: User }> = ({ user }) => {
 				const vidUrl = content?.data?.payload?.media?.url || content?.data?.videoUrl;
 				return (
 					<>
-					<div style={{ width: '40px', marginRight: '4px', textAlign: 'center' }}>
-							<Avatar src={botIcon} size="md" />
-						</div>
 					<Bubble type="image">
 						
 						<div style={{ padding: '7px' }}>
@@ -147,9 +138,6 @@ const StarredChatList: FC<{ user: User }> = ({ user }) => {
 			case 'options': {
 				return (
 					<>
-						<div style={{ width: '95px', marginRight: '4px', textAlign: 'center' }}>
-							<Avatar src={botIcon} size="md" />
-						</div>
 						<Bubble type="text">
 							<div style={{ display: 'flex' }}>
 								<span style={{ fontSize: '16px' }}>{content.text}</span>

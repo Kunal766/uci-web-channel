@@ -19,9 +19,6 @@ import { AppContext } from '../../../utils/app-context';
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
 import styles from './Comps.module.css';
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-ignore
-import botImage from '../../../assets/images/bot_icon_2.png';
 
 export const RenderComp: FC<any> = ({ currentUser, msg, chatUIMsg, onSend }) => {
 	console.log("venom2:",{currentUser})
@@ -34,7 +31,6 @@ export const RenderComp: FC<any> = ({ currentUser, msg, chatUIMsg, onSend }) => 
 	}>({});
 	const [starredFromLocal] = useLocalStorage('starredChats', null, true);
     
-	const botIcon=useMemo(()=>currentUser?.botImage || botImage ,[currentUser?.botImage]);
 	useEffect(() => {
 		if (starredFromLocal) {
 			if (Object.keys(starredFromLocal)?.includes(msg?.content?.data?.botUuid)) {
@@ -43,7 +39,6 @@ export const RenderComp: FC<any> = ({ currentUser, msg, chatUIMsg, onSend }) => 
 				});
 
 				if (starred) {
-					// console.log("qwe1:", "yes I exist")
 					setMsgToStarred(msg?.content?.data);
 					setIsInLocal(true);
 				}
@@ -63,10 +58,8 @@ export const RenderComp: FC<any> = ({ currentUser, msg, chatUIMsg, onSend }) => 
 
 	const onLongPress = useCallback(
 		(content: any) => {
-			console.log('qwe12:', { content });
 			if (msgToStarred?.botUuid) {
-				// console.log("nnnn longpress is triggered", { content, msgToStarred });
-				// console.log("context", context)
+			
 				const prevStarredMsgs = { ...context?.starredMsgs };
 				const newStarredMsgs = {
 					...prevStarredMsgs,
@@ -75,7 +68,7 @@ export const RenderComp: FC<any> = ({ currentUser, msg, chatUIMsg, onSend }) => 
 						(item) => item?.messageId !== msgToStarred?.messageId
 					)
 				};
-				// console.log("1234:", { newStarredMsgs, msgToStarred, prev: prevStarredMsgs?.[msgToStarred?.botUuid] })
+			
 				if (newStarredMsgs[msgToStarred?.botUuid]?.length === 0) {
 					const t = omit(newStarredMsgs, [msgToStarred?.botUuid]);
 					context?.setStarredMsgs(t);
@@ -105,21 +98,7 @@ export const RenderComp: FC<any> = ({ currentUser, msg, chatUIMsg, onSend }) => 
 				}
 				setMsgToStarred({});
 				setIsInLocal(false);
-				// try {
-				//   window &&
-				//     window?.androidInteract?.onMsgSaveUpdate(
-				//       content,
-				//       msg?.messageId,
-				//       currentUser?.id,
-				//       false
-				//     );
-				//   window && window?.androidInteract?.log(`${JSON.stringify(content)}`);
-				// } catch (err) {
-				//   window &&
-				//     window?.androidInteract?.log(
-				//       `error in onMsgSaveUpdate func:${JSON.stringify(err)}`
-				//     );
-				// }
+				
 			} else {
 				setMsgToStarred(content?.data);
 				setIsInLocal(true);
@@ -176,7 +155,6 @@ export const RenderComp: FC<any> = ({ currentUser, msg, chatUIMsg, onSend }) => 
 							className={`${styles.onHover} ${styles.listItem}`}
 							onClick={(e): void => {
 								e.preventDefault();
-								console.log('qwer12 trig', { key: choice.key, isDisabled });
 								if (isDisabled) {
 									toast.error('Cannot answer again');
 								} else {
@@ -219,17 +197,12 @@ export const RenderComp: FC<any> = ({ currentUser, msg, chatUIMsg, onSend }) => 
 	const onPdfDownload=(url:string):void=>{
 		window && window?.androidInteract?.onPdfDownload(url);
 	};
+
 	const { content, type } = msg;
-	console.log('venom:', { content, type ,msg});
 	switch (type) {
 		case 'text':
 			return (
 				<>
-					{content?.data?.position === 'left' && (
-						<div style={{ width: '40px', marginRight: '4px', textAlign: 'center' }}>
-							<Avatar src={botIcon} size="md" />
-						</div>
-					)}
 					<Bubble type="text">
 						<span className="onHover" style={{ fontSize: '16px' }}>
 							{content.text}
@@ -266,11 +239,6 @@ export const RenderComp: FC<any> = ({ currentUser, msg, chatUIMsg, onSend }) => 
 			const url = content?.data?.payload?.media?.url || content?.data?.imageUrl;
 			return (
 				<>
-					{content?.data?.position === 'left' && (
-						<div style={{ width: '40px', marginRight: '4px', textAlign: 'center' }}>
-							<Avatar src={botIcon} size="md" />
-						</div>
-					)}
 					<Bubble type="image">
 						<div style={{ padding: '7px' }}>
 							<Image src={url} width="299" height="200" alt="image" lazy fluid />
@@ -314,14 +282,8 @@ export const RenderComp: FC<any> = ({ currentUser, msg, chatUIMsg, onSend }) => 
 			const url = content?.data?.payload?.media?.url || content?.data?.fileUrl;
 			return (
 				<>
-					{content?.data?.position === 'left' && (
-						<div style={{ width: '40px', marginRight: '4px', textAlign: 'center' }}>
-							<Avatar src={botIcon} size="md" />
-						</div>
-					)}
 					<Bubble type="image">
 						<div style={{ padding: '7px' }}>
-							{/* <Image src={url} width="299" height="200" alt="image" lazy fluid /> */}
 							<FileCard file={url} extension="pdf" />
 							<div
 								style={{
@@ -363,11 +325,6 @@ export const RenderComp: FC<any> = ({ currentUser, msg, chatUIMsg, onSend }) => 
 			const url = content?.data?.payload?.media?.url || content?.data?.videoUrl;
 			return (
 				<>
-					{content?.data?.position === 'left' && (
-						<div style={{ width: '40px', marginRight: '4px', textAlign: 'center' }}>
-							<Avatar src={botIcon} size="md" />
-						</div>
-					)}
 					<Bubble type="image">
 						<div style={{ padding: '7px' }}>
 							<Video
@@ -410,12 +367,8 @@ export const RenderComp: FC<any> = ({ currentUser, msg, chatUIMsg, onSend }) => 
 			);
 		}
 		case 'options': {
-			console.log('qwe12:', { content });
 			return (
 				<>
-					<div style={{ width: '95px', marginRight: '4px', textAlign: 'center' }}>
-						<Avatar src={botIcon} size="md" />
-					</div>
 					<Bubble type="text">
 						<div style={{ display: 'flex' }}>
 							<span style={{ fontSize: '16px' }} dangerouslySetInnerHTML={{__html: `${content.text}`}} ></span>
