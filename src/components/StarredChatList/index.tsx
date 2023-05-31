@@ -1,6 +1,6 @@
 import React, { FC, ReactElement, useCallback, useContext, useMemo } from 'react';
-import { Bubble, FileCard, Image, List, ListItem, Video } from '@chatui/core';
-import { Chat } from '@chatui/core/lib/components/Chat';
+import { Bubble, FileCard, Image, List, ListItem, Video } from 'samagra-chatui';
+import { Chat } from 'samagra-chatui/lib/components/Chat';
 import { map } from 'lodash';
 import moment from 'moment';
 import { User } from '../../types';

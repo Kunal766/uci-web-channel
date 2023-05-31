@@ -1,4 +1,4 @@
-import { Bubble, Image, ScrollView, List, ListItem, Avatar, FileCard, Video } from '@chatui/core';
+import { Bubble, Image, ScrollView, List, ListItem, FileCard, Video } from 'samagra-chatui';
 import { faStar, faDownload } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { includes, map, find, filter, omit } from 'lodash';
@@ -242,7 +242,7 @@ export const RenderComp: FC<any> = ({ currentUser, msg, chatUIMsg, onSend }) => 
 					<Bubble type="image">
 						<div style={{ padding: '7px' }}>
 							<Image src={url} width="299" height="200" alt="image" lazy fluid />
-
+							{content?.data?.caption && <div><strong>{content?.data?.caption} </strong></div>}  
 							<div
 								style={{
 									display: 'flex',
@@ -285,6 +285,7 @@ export const RenderComp: FC<any> = ({ currentUser, msg, chatUIMsg, onSend }) => 
 					<Bubble type="image">
 						<div style={{ padding: '7px' }}>
 							<FileCard file={url} extension="pdf" />
+							{content?.data?.caption && <div><strong>{content?.data?.caption} </strong></div>}  
 							<div
 								style={{
 									display: 'flex',

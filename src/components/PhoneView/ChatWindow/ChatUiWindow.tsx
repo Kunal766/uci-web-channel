@@ -1,5 +1,5 @@
-import Chat from '@chatui/core';
-import '@chatui/core/dist/index.css';
+import Chat from 'samagra-chatui';
+import 'samagra-chatui/dist/index.css';
 import axios from 'axios';
 import React, {
 	FC,
@@ -35,7 +35,9 @@ const ChatUiWindow: FC<{
 				type: getMsgType(msg),
 				content: { text: msg?.text, data: { ...msg } },
 				position: msg?.position ?? 'right',
-				user: { avatar: msg?.position === 'left' ? currentUser?.botImage || botImage :""},
+				user: {
+					style:{border:'2px solid lightgray'},
+					avatar: msg?.position === 'left' ? currentUser?.botImage || botImage :""},
 			})),
 		[context?.messages, currentUser?.botImage]
 	);
@@ -136,7 +138,7 @@ const ChatUiWindow: FC<{
 		},
 		[context, currentUser]
 	);
-
+	
 	return (
 		<>
 			<FullScreenLoader loading={loading} />
