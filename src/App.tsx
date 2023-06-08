@@ -19,6 +19,7 @@ import { getBotDetailsUrl } from "./utils/urls";
 import { initialState } from "./utils/initial-states";
 import { UserInput } from "./components/UserInput";
 
+
 const App: FC = () => {
   // All Users
   const [users, setUsers] = useState<User[]>([]);
@@ -66,7 +67,6 @@ const App: FC = () => {
   }>(initialState);
 
   const updateMsgState = useCallback(({ user, msg, media }) => {
-    console.log("venom:",{user,msg,media})
     const newMsg = {
       username: user?.name,
       text: msg.content.title,
@@ -80,6 +80,12 @@ const App: FC = () => {
     };
     setMessages((prev: any) => [...prev, newMsg]);
   }, []);
+
+
+  const onMediaReceived =useCallback((botId,msgId)=>{
+    window && window?.androidInteract?.onMediaReceived(botId,msgId);
+		window && window?.androidInteract?.log(`onMediaReceived: ${JSON.stringify({ bot:botId ,msgId })}`);
+  },[]);
 
   const onMessageReceived = useCallback(
     (msg: any): void => {
@@ -96,18 +102,21 @@ const App: FC = () => {
           msg,
           media: { imageUrl: msg?.content?.media_url },
         });
+        onMediaReceived(user?.id,msg.messageId)
       } else if (msg.content.msg_type === "AUDIO") {
         updateMsgState({
           user,
           msg,
           media: { audioUrl: msg?.content?.media_url },
         });
+        onMediaReceived(user?.id,msg.messageId)
       } else if (msg.content.msg_type === "VIDEO") {
         updateMsgState({
           user,
           msg,
           media: { videoUrl: msg?.content?.media_url },
         });
+        onMediaReceived(user?.id,msg.messageId)
       } else if (
         msg.content.msg_type === "DOCUMENT" ||
         msg.content.msg_type === "FILE"
@@ -117,6 +126,7 @@ const App: FC = () => {
           msg,
           media: { fileUrl: msg?.content?.media_url },
         });
+        onMediaReceived(user?.id,msg.messageId)
       } else if (msg.content.msg_type === "TEXT") {
         updateMsgState({ user, msg, media: {} });
       }
@@ -134,7 +144,7 @@ const App: FC = () => {
         ])
       );
     },
-    [messages, updateMsgState]
+    [messages, onMediaReceived, updateMsgState]
   );
 
   const onSessionCreated = useCallback((session: { session: any }): void => {
@@ -196,6 +206,7 @@ const App: FC = () => {
     return true
   },[]);
  
+  console.log('crty:',{currentUser})
   useEffect(() => {
     try {
       const checkOnline = async (): Promise<void> => {
@@ -204,8 +215,8 @@ const App: FC = () => {
           // eslint-disable-next-line @typescript-eslint/ban-ts-comment
           // @ts-ignore
           const botIds = JSON.parse(localStorage.getItem("botList"));
-          console.log("asdf:", { botIds });
-
+          window && window?.androidInteract?.log("debug: botList "+JSON.stringify(botIds));
+          console.log("debug: botList",JSON.stringify(botIds))
           const config = {
             headers: {
               "Content-Type": "application/json",
@@ -214,10 +225,13 @@ const App: FC = () => {
               "admin-token": process.env.REACT_APP_Admin_Token,
             },
           };
-
+          const url=getBotDetailsUrl();
+          window && window?.androidInteract?.log("debug: url"+url);
           axios
-            .get(getBotDetailsUrl(), config)
+            .get(url, config)
             .then((response): any => {
+              setLoading(false);
+              window && window?.androidInteract?.log("debug: allBots"+JSON.stringify(response?.data?.result));
               const botDetailsList = without(
                 reverse(
                   sortBy(
@@ -255,7 +269,7 @@ const App: FC = () => {
               // eslint-disable-next-line @typescript-eslint/ban-ts-comment
               // @ts-ignore
               setUsers(botDetailsList);
-              setLoading(false);
+              console.log("crty:",{botDetailsList})
               window?.androidInteract?.onBotDetailsLoaded(
                 JSON.stringify(botDetailsList)
               );
@@ -267,8 +281,13 @@ const App: FC = () => {
                 // @ts-ignore
               } else setCurrentUser(botDetailsList?.[0]);
             })
-            .catch((err) => console.log("qwerty:", { err }));
+            .catch((err) => {
+              setLoading(false);
+              window && window?.androidInteract?.log("debug: getContext Error"+JSON.stringify(err));
+              console.log("qwerty:", { err })
+            });
         } else {
+          window && window?.androidInteract?.log("debug: in ofline mode");
           setLoading(false);
           if (localStorage.getItem("botDetails")) {
             setUsers(JSON.parse(localStorage.getItem("botDetails")));

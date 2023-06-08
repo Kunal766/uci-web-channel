@@ -1,6 +1,7 @@
 import { io } from 'socket.io-client';
+import { socketUrl } from './utils/urls';
 
-const URL = `${process.env.REACT_APP_TRANSPORT_SOCKET_URL}`;
+const URL = socketUrl;
 
 export const socket = io(URL, {
 	transportOptions: {

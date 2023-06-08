@@ -181,7 +181,8 @@ export const RenderComp: FC<any> = ({ currentUser, msg, chatUIMsg, onSend }) => 
 
 	const download = (url: string): void => {
 		try {
-			window && window?.androidInteract?.onImageDownload(url);
+			window && window?.androidInteract?.onImageDownload(currentUser?.id,url);
+			// onMediaDownload();
 			console.log('onImageDownload function executed');
 		} catch (err) {
 			console.log('onImageDownload function failed');
@@ -192,11 +193,18 @@ export const RenderComp: FC<any> = ({ currentUser, msg, chatUIMsg, onSend }) => 
 
 
 	const onVideoDownload=(url:string):void=>{
-		window && window?.androidInteract?.onVideoDownload(url);
+		window && window?.androidInteract?.onVideoDownload(currentUser?.id,url);
+		// onMediaDownload();
 	};
 	const onPdfDownload=(url:string):void=>{
-		window && window?.androidInteract?.onPdfDownload(url);
+		window && window?.androidInteract?.onPdfDownload(currentUser?.id,url);
+		// onMediaDownload();
 	};
+
+	// const onMediaDownload=useCallback(()=>{
+	// 	window && window?.androidInteract?.onMediaInteraction(currentUser?.id);
+	// 	window && window?.androidInteract?.log(`onMediaInteraction: ${JSON.stringify({ bot:currentUser?.id })}`);
+	// },[currentUser?.id])
 
 	const { content, type } = msg;
 	switch (type) {
@@ -235,7 +243,7 @@ export const RenderComp: FC<any> = ({ currentUser, msg, chatUIMsg, onSend }) => 
 			);
 
 		case 'image': {
-			console.log('alibaba:', { msg });
+			
 			const url = content?.data?.payload?.media?.url || content?.data?.imageUrl;
 			return (
 				<>

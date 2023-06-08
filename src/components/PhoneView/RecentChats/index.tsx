@@ -14,6 +14,7 @@ import styles from './index.module.css';
 
 import { User } from '../../../types/index';
 import moment from 'moment';
+import FullScreenLoader from '../../FullScreenLoader';
 
 interface recentChatsProps {
 	allUsers: Array<User>;
@@ -68,6 +69,7 @@ const RecentChats: React.FC<recentChatsProps> = ({ allUsers }) => {
 
 	return (
 		<Flex flexDirection="column" height="100vh">
+			<FullScreenLoader loading={context?.loading} />
 			{/* Top Section */}
 			<Box className={`${styles.top_section}`}>
 				{/* For the back button */}
